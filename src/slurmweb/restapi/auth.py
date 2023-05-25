@@ -24,7 +24,7 @@ from flask import request, abort, jsonify, Response
 from slurmweb.restapi.settings import settings
 from functools import wraps
 from werkzeug.exceptions import Forbidden
-from itsdangerous import (TimedJSONWebSignatureSerializer
+from itsdangerous import (URLSafeTimedSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from configparser import NoSectionError, NoOptionError
 import os
