@@ -58,7 +58,7 @@ define([
     function toggleModalCore(jobId) {
 
       $.ajax(config.cluster.api.url + config.cluster.api.path + '/job/' + jobId, ajaxUtils.getAjaxOptions(config.cluster))
-        .success(function(job) {
+        .done(function(job) {
           var context = {
             jobId: jobId,
             job: job
@@ -73,7 +73,7 @@ define([
     function toggleModalNode(nodeId) {
 
       $.ajax(config.cluster.api.url + config.cluster.api.path + '/jobs-by-node/' + nodeId, ajaxUtils.getAjaxOptions(config.cluster))
-        .success(function(jobs) {
+        .done(function(jobs) {
           var context;
 
           // expand the first job's informations
@@ -122,30 +122,30 @@ define([
         jobs: function(callback) {
 
           $.ajax(config.cluster.api.url + config.cluster.api.path + '/jobs', options)
-            .success(function(data) {
+            .done(function(data) {
               callback(null, data);
             })
-            .error(function() {
+            .fail(function() {
               callback(true, null);
             });
         },
         nodes: function(callback) {
 
           $.ajax(config.cluster.api.url + config.cluster.api.path + '/nodes', options)
-            .success(function(data) {
+            .done(function(data) {
               callback(null, data);
             })
-            .error(function() {
+            .fail(function() {
               callback(true, null);
             });
         },
         racks: function(callback) {
 
           $.ajax(config.cluster.api.url + config.cluster.api.path + '/racks', options)
-            .success(function(data) {
+            .done(function(data) {
               callback(null, data);
             })
-            .error(function() {
+            .fail(function() {
               callback(true, null);
             });
         }

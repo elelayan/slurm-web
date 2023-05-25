@@ -485,12 +485,14 @@ define([
         return false;
       }
 
-      require([ '../../../' + config.RACKNAME.FONT.PATH.replace(/\.js$/g, '') ], function() { // eslint-disable-line global-require
+//      require([ '../../../' + config.RACKNAME.FONT.PATH.replace(/\.js$/g, '') ], function() { // eslint-disable-line global-require
+var loader = new THREE.FontLoader();
+loader.load(config.RACKNAME.FONT.PATH, function(font) {
         var material, mesh,
           geometry = new THREE.TextGeometry(rack.name, {
             size: config.UNITSIZE * config.RACKNAME.SIZE,
             height: config.UNITSIZE * config.RACKNAME.DEPTH,
-            font: config.RACKNAME.FONT.NAME,
+            font: font,
             weight: 'normal',
             style: 'normal'
           });

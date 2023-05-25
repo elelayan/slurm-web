@@ -46,7 +46,7 @@ define([
     this.init = function() {
       var self = this
       $.ajax(config.cluster.api.url + config.cluster.api.path + '/partitions', ajaxUtils.getAjaxOptions(config.cluster))
-        .success(function(partitions) {
+        .done(function(partitions) {
           var context = {
             count: Object.keys(partitions).length,
             partitions: partitions

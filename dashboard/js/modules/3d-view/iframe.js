@@ -130,28 +130,28 @@ function init() {
     async.parallel({
       racks: function(callback) {
         $.ajax(config.cluster.api.url + config.cluster.api.path + '/racks', options)
-          .success(function(data) {
+          .done(function(data) {
             callback(null, data);
           })
-          .error(function(err) {
+          .fail(function(err) {
             callback(err, null);
           });
       },
       nodes: function(callback) {
         $.ajax(config.cluster.api.url + config.cluster.api.path + '/nodes', options)
-          .success(function(data) {
+          .done(function(data) {
             callback(null, data);
           })
-          .error(function(err) {
+          .fail(function(err) {
             callback(err, null);
           });
       },
       jobs: function(callback) {
         $.ajax(config.cluster.api.url + config.cluster.api.path + '/jobs', options)
-          .success(function(data) {
+          .done(function(data) {
             callback(null, data);
           })
-          .error(function(err) {
+          .fail(function(err) {
             callback(err, null);
           });
       }

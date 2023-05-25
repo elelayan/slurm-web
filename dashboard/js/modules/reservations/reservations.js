@@ -47,7 +47,7 @@ define([
       var self = this
 
       $.ajax(config.cluster.api.url + config.cluster.api.path + '/reservations', ajaxUtils.getAjaxOptions(config.cluster))
-        .success(function(reservations) {
+        .done(function(reservations) {
           var context = {
             count: Object.keys(reservations).length,
             reservations: reservations

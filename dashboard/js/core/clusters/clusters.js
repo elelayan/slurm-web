@@ -42,13 +42,13 @@ define([
   function retrieveClusterInformations(cluster, callback) {
 
     $.ajax(cluster.api.url + cluster.api.path + '/cluster', ajaxUtils.getAjaxOptions())
-      .success(function(response) {
+      .done(function(response) {
         cluster.infos = response.data;
         cluster.name = response.data.name;
         cluster.authentication = response.authentication;
         callback(null, null);
       })
-      .error(function(error) {
+      .fail(function(error) {
         // remove unreachable cluster from list
         clusters.splice(clusters.indexOf(cluster), 1);
 

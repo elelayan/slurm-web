@@ -49,12 +49,12 @@ define([
         }
 
         $.ajax(cluster.api.url + cluster.api.path + '/login', options)
-          .success(function(response) {
+          .done(function(response) {
             tokenUtils.setToken(cluster, response.id_token);
             userUtils.setUser(cluster, response);
             callback(null, null);
           })
-          .error(function(error) {
+          .fail(function(error) {
             return callback(true, error);
           });
       };

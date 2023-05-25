@@ -68,6 +68,7 @@ define([
       context.jobs = result;
 
       $('#table-jobs').html(tableJobsTemplate(context));
+      $('table.tablesorter').tablesorter(self.tablesorterOptions);
       $('.tt-input').css('width', '100%');
 
       $('tr[id^="tr-job-"]').on('click', function(e) {
@@ -105,7 +106,7 @@ define([
       self.onModal = jobId;
 
       $.ajax(config.cluster.api.url + config.cluster.api.path + '/job/' + jobId, ajaxUtils.getAjaxOptions(config.cluster))
-        .success(function(job) {
+        .done(function(job) {
           var context = {
             job: job
           };
@@ -146,7 +147,7 @@ define([
       });
 
       $.ajax(config.cluster.api.url + config.cluster.api.path + '/jobs', ajaxUtils.getAjaxOptions(config.cluster))
-        .success(function(jobs) {
+        .done(function(jobs) {
           var context, plotParams, index, dataJobsState, job, qos, part,
             dataAllocatedCores,
             labels = [],

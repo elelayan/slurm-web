@@ -58,7 +58,7 @@ define([
         } else if (tags[lastTagCount] === '(wckey)') {
           wckeys.push(tags[0]);
         } else if (tags[lastTagCount] === '(user)') {
-          users.push(tags[0] + ' ' + tags[1]);
+          users.push(tags[0]);
         } else if (tags[lastTagCount] === '(state)') {
           states.push(tags[0]);
         } else if (tags[lastTagCount] === '(reservation)') {
@@ -171,7 +171,7 @@ define([
         });
 
         $.ajax(config.cluster.api.url + config.cluster.api.path + '/nodeset', ajaxOptions)
-          .success(function(data) {
+          .done(function(data) {
             nodesItems = data;
 
             jobsFiltered = jobsFiltered.filter(function(item) {
@@ -193,7 +193,7 @@ define([
                 totalCpus += jobsFiltered[i].num_cpus;
               }
             }
-            $('#total-cpus').text(totalCpus+' cœurs utilisés');
+            $('#total-cpus').text(totalCpus+' cores used');
 
             return callback(jobs, result);
           });
@@ -205,7 +205,7 @@ define([
             totalCpus += jobsFiltered[i].num_cpus;
           }
         }
-        $('#total-cpus').text(totalCpus+' cœurs utilisés');
+        $('#total-cpus').text(totalCpus+' cores used');
 
         return callback(jobs, result);
       }

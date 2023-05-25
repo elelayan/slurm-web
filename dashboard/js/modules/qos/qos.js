@@ -48,7 +48,7 @@ define([
       var self = this;
 
       $.ajax(config.cluster.api.url + config.cluster.api.path + '/qos', ajaxUtils.getAjaxOptions(config.cluster))
-        .success(function(qos) {
+        .done(function(qos) {
           var context;
 
           if (qos.error) {

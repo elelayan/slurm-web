@@ -41,7 +41,7 @@ define([
     function toggleModalNode(nodeId) {
 
       $.ajax(config.cluster.api.url + config.cluster.api.path + '/jobs-by-node/' + nodeId, ajaxUtils.getAjaxOptions(config.cluster))
-        .success(function(jobs) {
+        .done(function(jobs) {
           var context;
 
           // expand the first job's informations
@@ -69,7 +69,7 @@ define([
     this.init = function() {
 
       $.ajax(config.cluster.api.url + config.cluster.api.path + '/topology', ajaxUtils.getAjaxOptions(config.cluster))
-        .success(function(topologyDatas) {
+        .done(function(topologyDatas) {
           var topology, width, height, color, force, svg, links, gnodes, nodes,
             slurmnodes, linknodes, nodesets,
             context = {

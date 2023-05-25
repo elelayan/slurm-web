@@ -254,7 +254,7 @@ define([
 
   function showJobsByNodes(options, config) {
     $.ajax(config.cluster.api.url + config.cluster.api.path + '/jobs-by-nodes', options)
-      .success(function(jobsByNodes) {
+      .done(function(jobsByNodes) {
         var context = {
           jobs: computeJobsForNodes(jobsByNodes)
         };
@@ -267,7 +267,7 @@ define([
 
   function showJobsByQos(options, config) {
     $.ajax(config.cluster.api.url + config.cluster.api.path + '/jobs-by-qos', options)
-      .success(function(jobsByQos) {
+      .done(function(jobsByQos) {
         var context = {
           jobs: computeJobsForQos(jobsByQos)
         };
@@ -286,7 +286,7 @@ define([
 
   function toggleModal(jobId, options, config) {
     $.ajax(config.cluster.api.url + config.cluster.api.path + '/job/' + jobId, options)
-      .success(function(job) {
+      .done(function(job) {
         var context = {
           job: job
         };

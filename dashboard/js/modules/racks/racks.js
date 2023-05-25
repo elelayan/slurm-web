@@ -52,20 +52,20 @@ define([
         nodes: function(callback) {
 
           $.ajax(config.cluster.api.url + config.cluster.api.path + '/nodes', ajaxUtils.getAjaxOptions(config.cluster))
-            .success(function(data) {
+            .done(function(data) {
               callback(null, data);
             })
-            .error(function() {
+            .fail(function() {
               callback(true, null);
             });
         },
         racks: function(callback) {
 
           $.ajax(config.cluster.api.url + config.cluster.api.path + '/racks', ajaxUtils.getAjaxOptions(config.cluster))
-            .success(function(data) {
+            .done(function(data) {
               callback(null, data);
             })
-            .error(function() {
+            .fail(function() {
               callback(true, null);
             });
         }
