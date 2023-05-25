@@ -204,6 +204,8 @@ class User(object):
 
             print("User %s authenticated" % login)
 
+            conn.unbind_s()
+            conn = get_ldap_connection()
             # search for user's groups
             look_filter = "(|(&(objectClass=*)(member=%s)))" % (user_dn)
             results = conn.search_s(base_group,
@@ -225,7 +227,10 @@ class User(object):
             raise AuthenticationError
 
         finally:
-            conn.unbind_s()
+            try:
+                conn.unbind_s()
+            except:
+                print("Error unbind_s")
 
     @staticmethod
     def get_role(login, groups=None, source=None):
