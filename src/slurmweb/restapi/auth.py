@@ -18,18 +18,18 @@
 # You should have received a copy of the GNU General Public License
 # along with slurm-web.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import ldap
 import json
 from flask import request, abort, jsonify, Response
 from slurmweb.restapi.settings import settings
 from functools import wraps
 from werkzeug.exceptions import Forbidden
-from itsdangerous import (URLSafeTimedSerializer
-                          as Serializer, BadSignature, SignatureExpired)
 from configparser import NoSectionError, NoOptionError
 import os
 import platform
 import pwd
+import jwt
 
 
 guests_allowed = False
@@ -257,29 +257,38 @@ class User(object):
     def generate_auth_token(
         self, expiration=int(settings.get('ldap', 'expiration'))
     ):
-        s = Serializer(secret_key, expires_in=expiration)
-        token = s.dumps({
-            'login': self.login,
-            'role':  self.role
-        }).decode('ascii')
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        token = jwt.encode(
+            {
+                'login': self.login,
+                'role':  self.role,
+                'iat': now,
+                "exp": now + datetime.timedelta(seconds=expiration),
+            },
+            secret_key,
+            algorithm="HS256")
+
         print("generate_auth_token : token -> %s" % token)
         return token
 
     @staticmethod
     def verify_auth_token(token):
-        s = Serializer(secret_key)
         try:
-            data = s.loads(token)
+            data = jwt.decode(
+                token, secret_key, options={
+                    "requires": ["exp", "iat", "login", "role"]
+                }, algorithms=["HS256"]
+            )
             print("verify_auth_token : data -> login id: %s role: %s" \
                   % (data['login'], data['role']))
-        except SignatureExpired:
+        except jwt.ExpiredSignatureError:
             print("verify_auth_token : SignatureExpired ")
             return None  # valid token, but expired
-        except BadSignature:
-            print("verify_auth_token : BadSignature ")
+        except jwt.InvalidSignatureError:
+            print("verify_auth_token : InvalidSignatureError ")
             return None  # invalid token
-        except TypeError:
-            print("verify_auth_token : TypeError")
+        except PyJWTError as e:
+            print("verify_auth_token : Error %r" %  e)
             return None
 
         if data['login'] == 'guest':
