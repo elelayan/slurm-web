@@ -117,11 +117,6 @@ define([
       $('#main').append(template(context));
       $(document).trigger('pageLoaded');
 
-      // hack for placeholder in IE
-      if ($.browser.msie) {
-        fakePlaceholder();
-      }
-
       if (config.cluster.authentication.guest) {
         $('#loginform #guest').show();
       }
