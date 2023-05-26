@@ -20,7 +20,8 @@
 # See https://github.com/phusion/baseimage-docker/blob/master/Changelog.md for
 # a list of version numbers.
 
-FROM phusion/baseimage:0.9.19
+#FROM phusion/baseimage:0.9.19
+FROM phusion/baseimage:jammy-1.0.1
 MAINTAINER Kilian Cavalotti <kilian@stanford.edu>
 
 # Set correct environment variables.
@@ -36,9 +37,17 @@ CMD ["/sbin/my_init"]
 # Install locales
 RUN locale-gen en_US.UTF-8
 
-ENV BUILD_DEPS="git devscripts equivs apt-utils apache2-dev libslurm-dev python-setuptools cython python-dev libslurmdb-dev libslurm-dev ca-certificates"
+# don't try to use the signed-by format
+COPY hpc-signing-key.asc /tmp/hpc-signing-key.asc
+RUN apt-key add /tmp/hpc-signing-key.asc \
+ && echo "deb http://private-repo/slurm bullseye main" > /etc/apt/sources.list.d/hpc-repo.list
 
-ENV RUN_DEPS="apache2 libapache2-mod-wsgi javascript-common python-flask clustershell libjs-bootstrap libjs-jquery-flot libjs-jquery-tablesorter munge slurm-llnl node-uglify fonts-dejavu-core python-ldap python-redis libjs-requirejs libjs-requirejs-text libjs-three libjs-d3 libjs-handlebars"
+# just a quick test:
+# RUN apt update
+
+ENV BUILD_DEPS="git devscripts equivs apt-utils apache2-dev python3-setuptools cython3 python3-all-dev libslurm-dev ca-certificates pybuild-plugin-pyproject"
+
+ENV RUN_DEPS="apache2 libapache2-mod-wsgi-py3 javascript-common python3-flask clustershell libjs-bootstrap libjs-jquery-flot libjs-jquery-tablesorter munge slurm-client node-uglify fonts-dejavu-core python3-ldap python3-redis libjs-requirejs libjs-requirejs-text libjs-three libjs-d3 libjs-handlebars libjs-async"
 
 # Enable universe and multiverse
 #RUN cat /etc/apt/sources.list && \
@@ -47,31 +56,31 @@ ENV RUN_DEPS="apache2 libapache2-mod-wsgi javascript-common python-flask cluster
 
 # Install system dependencies
 RUN apt-get update -q && \
+    apt -y dist-upgrade && \
     apt-get -y install $BUILD_DEPS $RUN_DEPS && \
-    ln -s /usr/lib/x86_64-linux-gnu/ /usr/lib64
+    rm -rf /var/lib/apt/lists/*
+
+# RUN ln -s /usr/lib/x86_64-linux-gnu/ /usr/lib64
 
 RUN a2enmod wsgi && \
     a2enconf javascript-common
 
 # Build and install specific deps
-ENV SLURM_VER=15.08.2
+ENV SLURM_VER=23.2.1
 RUN cd /usr/src && \
-    git clone https://github.com/PySlurm/pyslurm.git && \
+    git clone https://github.com/elelayan/pyslurm.git && \
     cd pyslurm && \
-    git checkout remotes/origin/$SLURM_VER && \
-    sed -i 's/__max_slurm_hex_version__ = "0x0f0803"/__max_slurm_hex_version__ = "0x0f0807"/' setup.py && \
+    git checkout hpc && \
     tar cvfj ../python-pyslurm_$SLURM_VER.orig.tar.bz2 --exclude .git . && \
-    mk-build-deps -ri -t "apt-get -y --no-install-recommends" && \
-    dch -v $SLURM_VER-1 -D testing "New upstream release" && \
+    cd /usr/src/pyslurm && \
     debuild -us -uc && \
-    dpkg -i ../python-pyslurm_$SLURM_VER-1_amd64.deb
-
+    dpkg -i ../python3-pyslurm_$SLURM_VER-1_amd64.deb
+ 
 RUN cd /usr/src && \
     git clone https://github.com/edf-hpc/opentypejs.git && \
     cd opentypejs && \
     git checkout debian/0.4.3-2 && \
 	tar cvfj ../opentypejs_0.4.3.orig.tar.bz2 --exclude .git . && \
-	mk-build-deps -ri -t "apt-get -y --no-install-recommends" && \
 	debuild -us -uc && \
 	dpkg -i ../node-opentypejs_0.4.3-2_all.deb
 
@@ -91,13 +100,15 @@ RUN cd /usr/src && \
 	debuild -us -uc && \
 	dpkg -i ../libjs-bootstrap-tagsinput_0.8.0-1_all.deb
 
-
+ARG COMMIT=5a9252b
 RUN cd /usr/src && \
-    git clone https://github.com/edf-hpc/slurm-web.git && \
+    git clone --single-branch --branch hpc https://github.com/elelayan/slurm-web.git && \
     cd slurm-web && \
-    git checkout debian/2.0.0 && \
+    git reset --hard ${COMMIT} && \
+    cp node-async/* /usr/lib/nodejs/ && \
     debuild -us -uc && \
     dpkg -i ../slurm-web-*deb
+
 
 # Create apache2 service file and start it
 RUN rm /etc/apache2/sites-available/default-ssl.conf && \
@@ -119,8 +130,8 @@ COPY munge.sh /etc/service/munge/run
 RUN chmod +x /etc/service/munge/run
 
 
-# Cleanup
-RUN apt-get clean
+# Cleanup is pointless unless you merge layers afterwards
+RUN apt-get remove -y $BUILD_DEPS
 
 EXPOSE 80/tcp
 
