@@ -328,12 +328,12 @@ class User(object):
                 user_name = given_name[0][1]['givenName'][0].decode('utf-8')
                 return user_name
         except:
-            print "Can't retrieve username from LDAP for %s" % self.login
+            print("Can't retrieve username from LDAP for %s" % self.login)
         # try to retrieve it for system
         try:
             return pwd.getpwnam(self.login)[4].split(',')[0]
         except:
-            print "Can't retrieve username from system for %s" % self.login
+            print("Can't retrieve username from system for %s" % self.login)
         # return user login if the other steps have failed
         return "%s" % self.login
 
