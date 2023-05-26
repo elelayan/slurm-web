@@ -133,6 +133,12 @@ RUN chmod +x /etc/service/munge/run
 # Cleanup is pointless unless you merge layers afterwards
 RUN apt-get remove -y $BUILD_DEPS
 
+
+# Override broken packaging of the pie plugin?!
+ADD --chmod=0644\
+    https://salsa.debian.org/js-team/flot/-/raw/debian/4.2.1+dfsg-5/source/jquery.flot.pie.js \
+    /usr/share/javascript/flot/jquery.flot.pie.js
+
 EXPOSE 80/tcp
 
 VOLUME ["/etc/slurm-web"]
